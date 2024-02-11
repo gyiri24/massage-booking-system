@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ServiceController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,5 +19,9 @@ Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::get('/services', [ServiceController::class, 'index']);
+Route::group(['middleware' => ['api']], function() {
+    Route::get('/services', [ServiceController::class, 'index']);
+    Route::get('/schedules', [ScheduleController::class, 'index']);
+});
+
 
