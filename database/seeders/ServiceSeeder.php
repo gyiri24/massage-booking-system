@@ -15,8 +15,8 @@ class ServiceSeeder extends Seeder
     {
         $services = [
             [
-            'title' => 'Massage 1',
-            'price' => 10000
+                'title' => 'Massage 1',
+                'price' => 10000
             ],
             [
                 'title' => 'Massage 2',
@@ -28,8 +28,8 @@ class ServiceSeeder extends Seeder
             ],
         ];
 
-        foreach ($services as $course) {
-            Service::create($course);
+        foreach ($services as $service) {
+            Service::create($service);
         }
     }
 }
