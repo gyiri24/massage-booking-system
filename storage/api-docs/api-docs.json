@@ -12,6 +12,34 @@
         }
     ],
     "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth",
+                    "API"
+                ],
+                "summary": "Provides a JWT token by email and password credentials",
+                "operationId": "8cb7742ae98d0990acb2907c4e00bf24",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/LoginRequest"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Logged in"
+                    }
+                }
+            }
+        },
         "/schedules": {
             "get": {
                 "tags": [
@@ -35,6 +63,54 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/services": {
+            "get": {
+                "tags": [
+                    "Services"
+                ],
+                "summary": "Get rating list with filters",
+                "operationId": "96950feb4aaa0ea9dd7db3b3838bd669",
+                "responses": {
+                    "200": {
+                        "description": "Return filtered rating list"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity!"
+                    },
+                    "500": {
+                        "description": "Internal server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "LoginRequest": {
+                "title": "LoginRequest",
+                "description": "Register a non exisiting user",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "User's email address",
+                        "example": "general.user@teszt.com"
+                    },
+                    "password": {
+                        "description": "User's password",
+                        "example": "Teszt123."
+                    }
+                },
+                "type": "object"
             }
         }
     }
