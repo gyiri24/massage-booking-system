@@ -1,0 +1,41 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Massage Booking System API",
+        "description": "Massage Booking System available endpoints list",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "Local server"
+        }
+    ],
+    "paths": {
+        "/schedules": {
+            "get": {
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Get schedules list with filters",
+                "operationId": "4e2227c2b64bbd8bb2b496a48855e5c4",
+                "responses": {
+                    "200": {
+                        "description": "Return filtered rating list"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity!"
+                    },
+                    "500": {
+                        "description": "Internal server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    }
+}

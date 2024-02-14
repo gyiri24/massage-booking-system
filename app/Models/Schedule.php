@@ -14,8 +14,12 @@ class Schedule extends Model
         'service_id',
         'user_id',
         'from',
-        'to',
-        'available',
+        'to'
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function scopeAvailable($query)

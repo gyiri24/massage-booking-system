@@ -6,6 +6,14 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/auth/login",
+     *     summary="Provides a JWT token by email and password credentials",
+     *     tags={"Auth"},
+     *     @OA\Response(response=200,description="Logged in")
+     * )
+     */
     public function login()
     {
         $credentials = request(['email', 'password']);
@@ -15,21 +23,5 @@ class AuthController extends Controller
         }
 
         return $this->respondWithToken($token);
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function respondWithToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ]);
     }
 }
