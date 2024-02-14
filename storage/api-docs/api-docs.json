@@ -15,8 +15,7 @@
         "/auth/login": {
             "post": {
                 "tags": [
-                    "Auth",
-                    "API"
+                    "Auth"
                 ],
                 "summary": "Provides a JWT token by email and password credentials",
                 "operationId": "8cb7742ae98d0990acb2907c4e00bf24",
@@ -107,7 +106,7 @@
                     },
                     "password": {
                         "description": "User's password",
-                        "example": "Teszt123."
+                        "example": "Teszt123"
                     }
                 },
                 "type": "object"

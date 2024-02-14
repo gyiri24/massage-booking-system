@@ -22,9 +22,13 @@ class Schedule extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function scopeAvailable($query)
+    public function scopeAvailableForUser($query, $userRole)
     {
-        return $query->whereNull('user_id');
+        if ($userRole === Role::VIP_ROLE) {
+            return $query->whereBetween('from', ['08:00:00', '17:00:00']);
+        }
+
+        return $query->whereBetween('from', ['08:00:00', '11:00:00']);
     }
 
     public function service(): BelongsTo
