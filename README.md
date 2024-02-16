@@ -23,6 +23,7 @@ docker-compose up -d
 docker exec -it -u application massage-booking-system-api bash
 composer install
 php artisan key:generate
+php artisan jwt:secret
 php artisan migrate
 php artisan db:seed
 php artisan l5-swagger:generate
