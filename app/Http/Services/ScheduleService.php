@@ -12,12 +12,17 @@ use Symfony\Component\HttpFoundation\Response;
 class ScheduleService
 {
     public const GENERAL_USER_DEADLINE = '11:00:00';
+
     public function list(string $userRole): Collection
     {
         return Schedule::availableForUser($userRole)->whereNull('user_id')->get();
     }
 
-    public function bookSchedule(array $bookingData)
+    /**
+     * @param array $bookingData
+     * @return mixed
+     */
+    public function bookSchedule(array $bookingData): mixed
     {
         $user = auth()->user();
         $userId = $user->id;
@@ -30,13 +35,60 @@ class ScheduleService
 
         $schedule = $this->getAvailableSchedule($from);
 
-        if(empty($schedule)) {
+        if (empty($schedule)) {
             abort(Response::HTTP_BAD_REQUEST, 'This time slot is already booked');
         }
 
         $this->updateSchedule($schedule, $userId, $serviceId);
 
         return $schedule;
+    }
+
+
+    /**
+     * @param Schedule $schedule
+     * @return void
+     */
+    public function cancelSchedule(Schedule $schedule): void
+    {
+        $userId = auth()->id();
+
+        if (is_null($schedule->user_id)) {
+            abort(Response::HTTP_BAD_REQUEST, 'This time slot is not booked and cannot be cancelled');
+        }
+
+        if ($schedule->user_id !== $userId) {
+            abort(Response::HTTP_BAD_REQUEST, 'Appointment does not belong to you');
+        }
+
+        $this->updateSchedule($schedule, null, null);
+    }
+
+    /**
+     * @param array $data
+     * @param Schedule $schedule
+     * @return mixed
+     */
+    public function reschedule(array $data, Schedule $schedule): mixed
+    {
+        $userId = auth()->id();
+        $newFrom = $data['newFrom'];
+        $serviceId = $data['serviceId'];
+
+        if ($schedule->user_id !== $userId) {
+            abort(Response::HTTP_BAD_REQUEST, 'Appointment does not belong to you');
+        }
+
+        $newSchedule = $this->getAvailableSchedule($newFrom);
+
+        if (empty($newSchedule)) {
+            abort(Response::HTTP_BAD_REQUEST, 'The new time slot is already booked');
+        }
+
+        $this->updateSchedule($schedule, null, null);
+        $this->updateSchedule($newSchedule, $userId, $serviceId);
+
+        return $newSchedule;
     }
 
     /**
@@ -70,50 +122,14 @@ class ScheduleService
 
     /**
      * @param Schedule $schedule
-     * @param int $userId
-     * @param int $serviceId
+     * @param int|null $userId
+     * @param int|null $serviceId
      * @return void
      */
-    public function updateSchedule(Schedule $schedule, int $userId, int $serviceId): void
+    public function updateSchedule(Schedule $schedule, int|null $userId, int|null $serviceId): void
     {
-        $schedule->update(['user_id' => $userId,'service_id' => $serviceId]);
+        $schedule->update(['user_id' => $userId, 'service_id' => $serviceId]);
         $schedule->refresh();
-    }
-
-    public function cancelSchedule(Schedule $schedule)
-    {
-        $userId = auth()->id();
-
-        if ($schedule->user_id !== $userId) {
-            abort(400, 'Appointment does not belong to you');
-        }
-
-        if (is_null($schedule->user_id)) {
-            abort(400, 'This time slot is not booked and cannot be cancelled');
-        }
-
-        $schedule->update(['user_id' => null]);
-    }
-
-    public function reschedule($bookingData, $schedule)
-    {
-        $userId = auth()->id();
-        $newFrom = $bookingData['new_from'];
-
-        if ($schedule->user_id !== $userId) {
-            return response()->json(['message' => 'Appointment not found or does not belong to you.'], 404);
-        }
-
-        $newSchedule = Schedule::where('from', $newFrom)
-        ->whereNull('user_id')
-        ->first();
-
-        if (!$newSchedule) {
-            return response()->json(['message' => 'The new time slot is already booked or does not exist.'], 400);
-        }
-
-        $schedule->update(['user_id' => null]);
-        $newSchedule->update(['user_id' => $userId]);
     }
 }
 

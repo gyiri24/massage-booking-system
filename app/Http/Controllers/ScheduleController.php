@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 
+use App\Http\Requests\RescheduleRequest;
 use App\Http\Resources\ScheduleResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Models\Schedule;
 use App\Http\Services\ScheduleService;
 use App\Http\Requests\BookScheduleRequest;
@@ -18,6 +18,7 @@ class ScheduleController extends Controller
     {
         $this->scheduleService = $scheduleService;
     }
+
     /**
      * @OA\Get(
      *     path="/schedules",
@@ -36,12 +37,13 @@ class ScheduleController extends Controller
      *     @OA\Response(response=500, description="Internal server error!")
      * )
      */
-    public function index() : JsonResponse
+    public function index(): JsonResponse
     {
-        $userRole = auth()->user()->role;
+        $userRole = auth()->user()->roleName;
 
         return $this->ok(ScheduleResource::collection($this->scheduleService->list($userRole)));
     }
+
     /**
      * @OA\Post(
      *     path="/schedules",
@@ -60,6 +62,8 @@ class ScheduleController extends Controller
      *     @OA\Response(response=422, description="Unprocessable entity!"),
      *     @OA\Response(response=500, description="Internal server error!")
      * )
+     * @param BookScheduleRequest $request
+     * @return JsonResponse
      */
     public function book(BookScheduleRequest $request): JsonResponse
     {
@@ -67,24 +71,21 @@ class ScheduleController extends Controller
 
         return $this->ok(ScheduleResource::make($this->scheduleService->bookSchedule($data)));
     }
+
     /**
      * @OA\Put(
-     *     path="/schedules/cancel",
-     *     summary="Get schedules list with filters",
+     *     path="/schedules/{scheduleId}/cancel",
+     *     summary="Cancel user appointment",
      *     security={ {"bearerAuth" : {}}},
      *     tags={"Schedules"},
-     *     @OA\RequestBody(
-     *          @OA\JsonContent(
-     *              allOf = {
-     *                  @OA\Schema(ref="#/components/schemas/BookScheduleRequest")
-     *             }
-     *         )
-     *     ),
-     *     @OA\Response(response=200,description="Return booked schedule"),
+     *     @OA\Parameter(in="path", name="scheduleId", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response( response=204, description="No content"),
      *     @OA\Response(response=401, description="Protected endpoint only logged in users."),
      *     @OA\Response(response=422, description="Unprocessable entity!"),
      *     @OA\Response(response=500, description="Internal server error!")
      * )
+     * @param Schedule $schedule
+     * @return JsonResponse
      */
     public function cancel(Schedule $schedule): JsonResponse
     {
@@ -92,29 +93,34 @@ class ScheduleController extends Controller
 
         return $this->noContent();
     }
+
     /**
      * @OA\Put(
-     *     path="/schedules/reschedule",
-     *     summary="Get schedules list with filters",
+     *     path="/schedules/{scheduleId}/reschedule",
+     *     summary="Reschedule user appointment",
      *     security={ {"bearerAuth" : {}}},
      *     tags={"Schedules"},
+     *     @OA\Parameter(in="path", name="scheduleId", required=true, @OA\Schema(type="integer")),
      *     @OA\RequestBody(
-     *          @OA\JsonContent(
-     *              allOf = {
-     *                  @OA\Schema(ref="#/components/schemas/BookScheduleRequest")
-     *             }
-     *         )
-     *     ),
+     *           @OA\JsonContent(
+     *               allOf = {
+     *                   @OA\Schema(ref="#/components/schemas/RescheduleRequest")
+     *              }
+     *          )
+     *      ),
      *     @OA\Response(response=200,description="Return booked schedule"),
      *     @OA\Response(response=401, description="Protected endpoint only logged in users."),
      *     @OA\Response(response=422, description="Unprocessable entity!"),
      *     @OA\Response(response=500, description="Internal server error!")
      * )
+     * @param RescheduleRequest $request
+     * @param Schedule $schedule
+     * @return JsonResponse
      */
-    public function reschedule(Request $request, Schedule $schedule)
+    public function reschedule(RescheduleRequest $request, Schedule $schedule): JsonResponse
     {
-        $data = $request->only('new_from', 'from');
+        $data = $request->only('serviceId', 'newFrom');
 
-        return $this->ok($this->scheduleService->reschedule($data, $schedule));
+        return $this->ok(ScheduleResource::make($this->scheduleService->reschedule($data, $schedule)));
     }
 }

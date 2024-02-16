@@ -25,6 +25,8 @@ Route::group(['middleware' => 'jwt.auth'], function() {
     Route::prefix('schedules')->group(function () {
         Route::get('/', [ScheduleController::class, 'index']);
         Route::post('/', [ScheduleController::class, 'book']);
+        Route::put('/{schedule}/cancel', [ScheduleController::class, 'cancel']);
+        Route::put('/{schedule}/reschedule', [ScheduleController::class, 'reschedule']);
     });
 });
 

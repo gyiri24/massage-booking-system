@@ -30,7 +30,7 @@ class Handler extends ExceptionHandler
         $this->renderable(function (Throwable $exception) {
             if ($exception instanceof NotFoundHttpException) {
                 return $this->errorResponse(
-                    __('errors.not_found'),
+                    __('Entity not found!'),
                     $exception->getStatusCode() !== 0 ? $exception->getStatusCode() : Response::HTTP_NOT_FOUND,
                     $exception->getTrace()
                 );

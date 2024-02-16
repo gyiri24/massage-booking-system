@@ -113,29 +113,26 @@
                 ]
             }
         },
-        "/schedules/cancel": {
+        "/schedules/{scheduleId}/cancel": {
             "put": {
                 "tags": [
                     "Schedules"
                 ],
-                "summary": "Get schedules list with filters",
-                "operationId": "59e1de9d22052285b10fa39cffad8d41",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/components/schemas/BookScheduleRequest"
-                                    }
-                                ]
-                            }
+                "summary": "Cancel user appointment",
+                "operationId": "d65b6254f3f7fd6498ab4fbbc5e93161",
+                "parameters": [
+                    {
+                        "name": "scheduleId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
                         }
                     }
-                },
+                ],
                 "responses": {
-                    "200": {
-                        "description": "Return booked schedule"
+                    "204": {
+                        "description": "No content"
                     },
                     "401": {
                         "description": "Protected endpoint only logged in users."
@@ -154,20 +151,30 @@
                 ]
             }
         },
-        "/schedules/reschedule": {
+        "/schedules/{scheduleId}/reschedule": {
             "put": {
                 "tags": [
                     "Schedules"
                 ],
-                "summary": "Get schedules list with filters",
-                "operationId": "846903dbe231d0c8c0ef94751bed2cda",
+                "summary": "Reschedule user appointment",
+                "operationId": "06cb114d2a1b11fd959a3b72dc421c01",
+                "parameters": [
+                    {
+                        "name": "scheduleId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
                                 "allOf": [
                                     {
-                                        "$ref": "#/components/schemas/BookScheduleRequest"
+                                        "$ref": "#/components/schemas/RescheduleRequest"
                                     }
                                 ]
                             }
@@ -281,6 +288,21 @@
                     "password": {
                         "description": "User's password",
                         "example": "Teszt123"
+                    }
+                },
+                "type": "object"
+            },
+            "RescheduleRequest": {
+                "title": "RescheduleRequest",
+                "description": "Schedule data",
+                "properties": {
+                    "serviceId": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "newFrom": {
+                        "type": "string",
+                        "example": "09:00:00"
                     }
                 },
                 "type": "object"
