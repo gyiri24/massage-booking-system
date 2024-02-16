@@ -44,8 +44,31 @@
                 "tags": [
                     "Schedules"
                 ],
-                "summary": "Get schedules list with filters",
+                "summary": "Get available schedules for user",
                 "operationId": "4e2227c2b64bbd8bb2b496a48855e5c4",
+                "responses": {
+                    "200": {
+                        "description": "Return filtered schedule list"
+                    },
+                    "401": {
+                        "description": "Unatuhorized"
+                    },
+                    "500": {
+                        "description": "Internal server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Get schedules list with filters",
+                "operationId": "a2978f187f401d890a6813ff295bbeab",
                 "responses": {
                     "200": {
                         "description": "Return filtered rating list"
@@ -110,6 +133,34 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "requestBodies": {
+            "BookScheduleRequest": {
+                "description": "Book a schedule slot",
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "serviceId",
+                                "from"
+                            ],
+                            "properties": {
+                                "serviceId": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "from": {
+                                    "type": "string",
+                                    "format": "time",
+                                    "example": "14:00"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
             }
         }
     }
