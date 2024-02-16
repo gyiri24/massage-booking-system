@@ -15,10 +15,10 @@ class RoleSeeder extends Seeder
     {
         $roles = [
             [
-                'name' => 'general'
+                'name' => Role::GENERAL_ROLE
             ],
             [
-                'name' => 'vip'
+                'name' => Role::VIP_ROLE
             ]
         ];
 

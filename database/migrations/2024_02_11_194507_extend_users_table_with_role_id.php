@@ -25,7 +25,7 @@ return new class extends Migration
     {
         Schema::table('users', function($table) {
             $table->dropForeign(['role_id']);
-            $table->$table->dropColumn('role_id');
+            $table->dropColumn('role_id');
         });
     }
 };
