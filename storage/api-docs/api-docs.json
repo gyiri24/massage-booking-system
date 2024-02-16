@@ -48,10 +48,20 @@
                 "operationId": "4e2227c2b64bbd8bb2b496a48855e5c4",
                 "responses": {
                     "200": {
-                        "description": "Return filtered schedule list"
+                        "description": "schedule list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ScheduleResource"
+                                    }
+                                }
+                            }
+                        }
                     },
                     "401": {
-                        "description": "Unatuhorized"
+                        "description": "Protected endpoint only logged in users."
                     },
                     "500": {
                         "description": "Internal server error!"
@@ -69,9 +79,107 @@
                 ],
                 "summary": "Get schedules list with filters",
                 "operationId": "a2978f187f401d890a6813ff295bbeab",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/BookScheduleRequest"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Return filtered rating list"
+                        "description": "Return booked schedule"
+                    },
+                    "401": {
+                        "description": "Protected endpoint only logged in users."
+                    },
+                    "422": {
+                        "description": "Unprocessable entity!"
+                    },
+                    "500": {
+                        "description": "Internal server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/schedules/cancel": {
+            "put": {
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Get schedules list with filters",
+                "operationId": "59e1de9d22052285b10fa39cffad8d41",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/BookScheduleRequest"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Return booked schedule"
+                    },
+                    "401": {
+                        "description": "Protected endpoint only logged in users."
+                    },
+                    "422": {
+                        "description": "Unprocessable entity!"
+                    },
+                    "500": {
+                        "description": "Internal server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/schedules/reschedule": {
+            "put": {
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Get schedules list with filters",
+                "operationId": "846903dbe231d0c8c0ef94751bed2cda",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/BookScheduleRequest"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Return booked schedule"
+                    },
+                    "401": {
+                        "description": "Protected endpoint only logged in users."
                     },
                     "422": {
                         "description": "Unprocessable entity!"
@@ -92,14 +200,24 @@
                 "tags": [
                     "Services"
                 ],
-                "summary": "Get rating list with filters",
+                "summary": "Get service list",
                 "operationId": "96950feb4aaa0ea9dd7db3b3838bd669",
                 "responses": {
                     "200": {
-                        "description": "Return filtered rating list"
+                        "description": "service list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ServiceResource"
+                                    }
+                                }
+                            }
+                        }
                     },
-                    "422": {
-                        "description": "Unprocessable entity!"
+                    "401": {
+                        "description": "Protected endpoint only logged in users."
                     },
                     "500": {
                         "description": "Internal server error!"
@@ -115,6 +233,39 @@
     },
     "components": {
         "schemas": {
+            "errorResponse": {
+                "title": "errorResponse",
+                "properties": {
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "error message"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "BookScheduleRequest": {
+                "title": "BookScheduleRequest",
+                "description": "Schedule data",
+                "properties": {
+                    "serviceId": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "from": {
+                        "type": "string",
+                        "example": "08:00:00"
+                    }
+                },
+                "type": "object"
+            },
             "LoginRequest": {
                 "title": "LoginRequest",
                 "description": "Register a non exisiting user",
@@ -133,34 +284,79 @@
                     }
                 },
                 "type": "object"
+            },
+            "ScheduleResource": {
+                "title": "ScheduleResource",
+                "description": "Contains schedule data",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "from": {
+                        "type": "string",
+                        "example": "08:00:00"
+                    },
+                    "to": {
+                        "type": "string",
+                        "example": "09:00:00"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserResource"
+                    }
+                },
+                "type": "object"
+            },
+            "ServiceResource": {
+                "title": "ServiceResource",
+                "description": "Contains service data",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Massage 1"
+                    },
+                    "price": {
+                        "type": "string",
+                        "example": 10000
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "title": "UserResource",
+                "description": "Contains user data",
+                "properties": {
+                    "id": {
+                        "description": "User's id",
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "description": "User's full name",
+                        "type": "string",
+                        "example": "Sample Name"
+                    },
+                    "email": {
+                        "description": "User's email",
+                        "type": "string",
+                        "format": "email",
+                        "example": "email@email.net"
+                    }
+                },
+                "type": "object"
             }
         },
-        "requestBodies": {
-            "BookScheduleRequest": {
-                "description": "Book a schedule slot",
-                "required": true,
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "required": [
-                                "serviceId",
-                                "from"
-                            ],
-                            "properties": {
-                                "serviceId": {
-                                    "type": "integer",
-                                    "example": 1
-                                },
-                                "from": {
-                                    "type": "string",
-                                    "format": "time",
-                                    "example": "14:00"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    }
-                }
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     }

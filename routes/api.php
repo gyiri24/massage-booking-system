@@ -24,7 +24,7 @@ Route::group(['middleware' => 'jwt.auth'], function() {
 
     Route::prefix('schedules')->group(function () {
         Route::get('/', [ScheduleController::class, 'index']);
-        Route::post('/', [ScheduleController::class, 'create']);
+        Route::post('/', [ScheduleController::class, 'book']);
     });
 });
 

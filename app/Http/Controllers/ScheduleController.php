@@ -12,7 +12,7 @@ use App\Http\Requests\BookScheduleRequest;
 
 class ScheduleController extends Controller
 {
-    protected $scheduleService;
+    private ScheduleService $scheduleService;
 
     public function __construct(ScheduleService $scheduleService)
     {
@@ -24,14 +24,21 @@ class ScheduleController extends Controller
      *     summary="Get available schedules for user",
      *     security={ {"bearerAuth" : {}}},
      *     tags={"Schedules"},
-     *     @OA\Response(response=200,description="Return filtered schedule list"),
-     *     @OA\Response(response=401,description="Unatuhorized"),
+     *     @OA\Response(
+     *           response=200,
+     *           description="schedule list",
+     *           @OA\JsonContent(
+     *               type="array",
+     *               @OA\Items(ref="#/components/schemas/ScheduleResource")
+     *           ),
+     *     ),
+     *     @OA\Response(response=401, description="Protected endpoint only logged in users."),
      *     @OA\Response(response=500, description="Internal server error!")
      * )
      */
     public function index() : JsonResponse
     {
-        $userRole = auth()->user()->roleName;
+        $userRole = auth()->user()->role;
 
         return $this->ok(ScheduleResource::collection($this->scheduleService->list($userRole)));
     }
@@ -41,25 +48,69 @@ class ScheduleController extends Controller
      *     summary="Get schedules list with filters",
      *     security={ {"bearerAuth" : {}}},
      *     tags={"Schedules"},
-     *     @OA\Response(response=200,description="Return filtered rating list"),
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              allOf = {
+     *                  @OA\Schema(ref="#/components/schemas/BookScheduleRequest")
+     *             }
+     *         )
+     *     ),
+     *     @OA\Response(response=200,description="Return booked schedule"),
+     *     @OA\Response(response=401, description="Protected endpoint only logged in users."),
      *     @OA\Response(response=422, description="Unprocessable entity!"),
      *     @OA\Response(response=500, description="Internal server error!")
      * )
      */
-    public function book(BookScheduleRequest $request)
+    public function book(BookScheduleRequest $request): JsonResponse
     {
-        $data = $request->only('service_id', 'from');
+        $data = $request->only('serviceId', 'from');
 
-        return $this->ok($this->scheduleService->bookSchedule($data));
+        return $this->ok(ScheduleResource::make($this->scheduleService->bookSchedule($data)));
     }
-
-    public function cancel(Schedule $schedule)
+    /**
+     * @OA\Put(
+     *     path="/schedules/cancel",
+     *     summary="Get schedules list with filters",
+     *     security={ {"bearerAuth" : {}}},
+     *     tags={"Schedules"},
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              allOf = {
+     *                  @OA\Schema(ref="#/components/schemas/BookScheduleRequest")
+     *             }
+     *         )
+     *     ),
+     *     @OA\Response(response=200,description="Return booked schedule"),
+     *     @OA\Response(response=401, description="Protected endpoint only logged in users."),
+     *     @OA\Response(response=422, description="Unprocessable entity!"),
+     *     @OA\Response(response=500, description="Internal server error!")
+     * )
+     */
+    public function cancel(Schedule $schedule): JsonResponse
     {
         $this->scheduleService->cancelSchedule($schedule);
 
         return $this->noContent();
     }
-
+    /**
+     * @OA\Put(
+     *     path="/schedules/reschedule",
+     *     summary="Get schedules list with filters",
+     *     security={ {"bearerAuth" : {}}},
+     *     tags={"Schedules"},
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              allOf = {
+     *                  @OA\Schema(ref="#/components/schemas/BookScheduleRequest")
+     *             }
+     *         )
+     *     ),
+     *     @OA\Response(response=200,description="Return booked schedule"),
+     *     @OA\Response(response=401, description="Protected endpoint only logged in users."),
+     *     @OA\Response(response=422, description="Unprocessable entity!"),
+     *     @OA\Response(response=500, description="Internal server error!")
+     * )
+     */
     public function reschedule(Request $request, Schedule $schedule)
     {
         $data = $request->only('new_from', 'from');

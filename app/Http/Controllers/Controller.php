@@ -18,6 +18,14 @@ use Symfony\Component\HttpFoundation\Response;
  *      title="Massage Booking System API",
  *      description="Massage Booking System available endpoints list"
  * )
+ * @OA\SecurityScheme(
+ *       securityScheme="bearerAuth",
+ *       in="header",
+ *       name="Authorization",
+ *       type="apiKey",
+ *       scheme="bearer",
+ *       bearerFormat="JWT",
+ *  )
  */
 class Controller extends BaseController
 {
@@ -46,9 +54,9 @@ class Controller extends BaseController
      *
      * @param  string $token
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    protected function respondWithToken($token)
+    protected function respondWithToken($token): JsonResponse
     {
         return response()->json([
             'accessToken' => $token,
